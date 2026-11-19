@@ -6,106 +6,77 @@
 using namespace std;
 
 // Base Class
-class Product
-{
+class Product{
 private:
     string name;
     int price;
-
 public:
-    Product(string n, int p)
-    {
+    Product(string n, int p){
         name = n;
         price = p;
     }
-
-    string getName() const
-    {
+    string getName() const{
         return name;
     }
-
-    int getPrice() const
-    {
+    int getPrice() const{
         return price;
     }
-
     virtual void display(ostream &out) const = 0;
-
     virtual ~Product() {}
 
-    friend ostream& operator<<(ostream &out, const Product &p)
-    {
+    friend ostream& operator<<(ostream &out, const Product &p){
         p.display(out);
         return out;
     }
 };
 
 // Derived Class 1
-class Clothes : public Product
-{
+class Clothes : public Product{
 public:
     Clothes(string n, int p) : Product(n, p) {}
-
-    void display(ostream &out) const override
-    {
+    void display(ostream &out) const override{
         out << getName() << " - Rs. " << getPrice()
             << " | Sizes: S, M, L";
     }
 };
 
 // Derived Class 2
-class Electronics : public Product
-{
+class Electronics : public Product{
 public:
     Electronics(string n, int p) : Product(n, p) {}
-
-    void display(ostream &out) const override
-    {
+    void display(ostream &out) const override{
         out << getName() << " - Rs. " << getPrice();
     }
 };
 
 // Cart Structure
-struct CartItem
-{
+struct CartItem{
     Product *product;
     int quantity;
     string size;
 };
 
 // Number Validation
-int getInteger()
-{
+int getInteger(){
     string input;
-
-    while (true)
-    {
+    while (true){
         getline(cin, input);
-
-        try
-        {
+        try{
             if (input.empty())
                 throw invalid_argument("Empty input");
-
             int number = 0;
 
-            for (int i = 0; i < input.length(); i++)
-            {
+            for (int i = 0; i < input.length(); i++) {
                 if (input[i] < '0' || input[i] > '9')
                     throw invalid_argument("Invalid input");
-
                 int digit = input[i] - '0';
-
                 if (number > (2147483647 - digit) / 10)
                     throw invalid_argument("Number too large");
-
                 number = number * 10 + digit;
             }
-
             return number;
         }
-        catch (invalid_argument &e)
-        {
+        catch (invalid_argument &e){
             cout << "Enter a valid number: ";
         }
     }
@@ -128,43 +99,36 @@ int getYesNo()
 }
 
 // Customer Details
-void getCustomerDetails(string &name, string &mobile, string &address)
-{
-    do
-    {
+void getCustomerDetails(string &name, string &mobile, string &address){
+    do{
         cout << "Enter Customer Name: ";
         getline(cin, name);
     } while (name.empty());
 
-    while (true)
-    {
+    while (true) {
         cout << "Enter 10-digit Mobile Number: ";
         getline(cin, mobile);
 
         bool valid = mobile.length() == 10;
 
-        for (int i = 0; i < mobile.length(); i++)
-        {
+        for (int i = 0; i < mobile.length(); i++) {
             if (mobile[i] < '0' || mobile[i] > '9')
                 valid = false;
         }
 
         if (valid)
             break;
-
         cout << "Invalid mobile number. Try again.\n";
     }
 
-    do
-    {
+    do{
         cout << "Enter Address: ";
         getline(cin, address);
     } while (address.empty());
 }
 
 // Display Products
-void viewProducts(Product *products[])
-{
+void viewProducts(Product *products[]){
     cout << "\n---------- CLOTHES ----------\n";
 
     for (int i = 0; i < 3; i++)
@@ -177,27 +141,23 @@ void viewProducts(Product *products[])
 }
 
 // Add Products to Cart
-void addToCart(Product *products[], CartItem *&cart, int &count)
-{
+void addToCart(Product *products[], CartItem *&cart, int &count){
     int choice = 1;
 
-    while (choice == 1)
-    {
+    while (choice == 1) {
         viewProducts(products);
 
         cout << "\nEnter Product Number: ";
         int id = getInteger();
 
-        if (id < 1 || id > 6)
-        {
+        if (id < 1 || id > 6) {
             cout << "Invalid product number.\n";
             continue;
         }
 
         string size = "";
 
-        if (id >= 1 && id <= 3)
-        {
+        if (id >= 1 && id <= 3){
             cout << "Select Size (S/M/L): ";
             getline(cin, size);
         }
@@ -205,8 +165,7 @@ void addToCart(Product *products[], CartItem *&cart, int &count)
         cout << "Enter Quantity: ";
         int qty = getInteger();
 
-        if (qty == 0)
-        {
+        if (qty == 0) {
             cout << "Quantity must be greater than zero.\n";
             continue;
         }
@@ -232,10 +191,8 @@ void addToCart(Product *products[], CartItem *&cart, int &count)
 }
 
 // View Cart
-void viewCart(CartItem *cart, int count)
-{
-    if (count == 0)
-    {
+void viewCart(CartItem *cart, int count){
+    if (count == 0){
         cout << "\nYour cart is empty.\n";
         return;
     }
@@ -244,8 +201,7 @@ void viewCart(CartItem *cart, int count)
 
     cout << "\n----------- SHOPPING CART -----------\n";
 
-    for (int i = 0; i < count; i++)
-    {
+    for (int i = 0; i < count; i++){
         int amount = cart[i].product->getPrice() * cart[i].quantity;
 
         cout << i + 1 << ". "
@@ -259,15 +215,12 @@ void viewCart(CartItem *cart, int count)
 
         total += amount;
     }
-
     cout << "Total Amount: Rs. " << total << endl;
 }
 
 // Remove Products from Cart
-void removeFromCart(CartItem *&cart, int &count)
-{
-    if (count == 0)
-    {
+void removeFromCart(CartItem *&cart, int &count){
+    if (count == 0){
         cout << "\nYour cart is empty.\n";
         return;
     }
@@ -277,21 +230,18 @@ void removeFromCart(CartItem *&cart, int &count)
     cout << "\nHow many products do you want to remove? ";
     int removeCount = getInteger();
 
-    if (removeCount == 0 || removeCount > count)
-    {
+    if (removeCount == 0 || removeCount > count) {
         cout << "Invalid number of products.\n";
         return;
     }
 
-    for (int r = 0; r < removeCount; r++)
-    {
+    for (int r = 0; r < removeCount; r++){
         viewCart(cart, count);
 
         cout << "\nEnter product number to remove: ";
         int id = getInteger();
 
-        if (id < 1 || id > count)
-        {
+        if (id < 1 || id > count) {
             cout << "Invalid product number. Try again.\n";
             r--;
             continue;
@@ -300,8 +250,7 @@ void removeFromCart(CartItem *&cart, int &count)
         CartItem *temp = new CartItem[count - 1];
         int j = 0;
 
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++){
             if (i != id - 1)
                 temp[j++] = cart[i];
         }
@@ -315,19 +264,15 @@ void removeFromCart(CartItem *&cart, int &count)
 }
 
 // Generate Invoice
-void generateInvoice(string name, string mobile, string address,
-                     CartItem *&cart, int &count)
-{
-    if (count == 0)
-    {
+void generateInvoice(string name, string mobile, string address,CartItem *&cart, int &count){
+    if (count == 0){
         cout << "\nYour cart is empty. Cannot generate invoice.\n";
         return;
     }
 
     fstream file("orders.txt", ios::out | ios::app);
 
-    if (!file)
-    {
+    if (!file) {
         cout << "Unable to open invoice file.\n";
         return;
     }
@@ -348,16 +293,14 @@ void generateInvoice(string name, string mobile, string address,
     cout << "\nProduct Details:\n";
     file << "\nProduct Details:\n";
 
-    for (int i = 0; i < count; i++)
-    {
+    for (int i = 0; i < count; i++){
         int amount = cart[i].product->getPrice() * cart[i].quantity;
 
         cout << cart[i].product->getName();
 
         file << cart[i].product->getName();
 
-        if (cart[i].size != "")
-        {
+        if (cart[i].size != "") {
             cout << " | Size: " << cart[i].size;
             file << " | Size: " << cart[i].size;
         }
@@ -387,8 +330,7 @@ void generateInvoice(string name, string mobile, string address,
 }
 
 // Main Function
-int main()
-{
+int main(){
     string name, mobile, address;
 
     cout << "===== E-COMMERCE SHOPPING SYSTEM =====\n";
@@ -409,8 +351,7 @@ int main()
     int count = 0;
     int choice;
 
-    do
-    {
+    do  {
         cout << "\n========== MAIN MENU ==========\n";
         cout << "1. View Products\n";
         cout << "2. Add Products to Cart\n";
@@ -422,8 +363,7 @@ int main()
 
         choice = getInteger();
 
-        switch (choice)
-        {
+        switch (choice) {
             case 1:
                 viewProducts(products);
                 break;
